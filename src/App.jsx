@@ -147,9 +147,12 @@ export default function App() {
     const expenseMonth = sumBy(expenseEntries, month);
     const expenseYear = sumBy(expenseEntries, year);
 
-    const totalInvestment = data.investmentHistory.reduce((s, h) => s + (Number(h.amount) || 0), 0);
+    const totalInvestment = data.investmentHistory.reduce((s, h) => s + (Number(h.amount) || 0), 0)
+      + data.manualTx.filter(t => t.type === "expense" && t.accountId).reduce((s, t) => s + (Number(t.amount) || 0), 0);
     const investByAccount = {};
     data.investmentHistory.forEach(h => { investByAccount[h.accountId] = (investByAccount[h.accountId] || 0) + (Number(h.amount) || 0); });
+    // รายการ "อื่นๆ" ที่เป็นรายจ่ายและผูกกับไอดีเกม ก็ถือเป็นเงินลงทุนของไอดีนั้นด้วย (เช่น ค่าธรรมเนียม/ค่าใช้จ่ายอื่นที่จ่ายเพื่อไอดีนี้)
+    data.manualTx.filter(t => t.type === "expense" && t.accountId).forEach(t => { investByAccount[t.accountId] = (investByAccount[t.accountId] || 0) + (Number(t.amount) || 0); });
 
     const pendingPayment = orders.filter(o => o.paymentStatus === "pending" || o.paymentStatus === "partial").length;
     const totalDue = orders.reduce((s, o) => s + orderBalance(o), 0);
@@ -783,7 +786,7 @@ export default function App() {
       )}
       {tab === "finance" && (
         <div className="pgs-scroll" style={{ position: "fixed", inset: "60px 0 74px 0", maxWidth: 430, margin: "0 auto", background: "var(--bg)", zIndex: 40 }}>
-          <FinanceTab data={data} stats={stats} custName={custName} accName={accName} openNew={() => setModal({ type: "tx", mode: "add" })} back={() => setTab("dashboard")} onDeleteManual={deleteManualTx} openDetail={(d) => setDetail(d)} />
+          <FinanceTab data={data} stats={stats} custName={custName} accName={accName} openNew={() => setModal({ type: "tx", mode: "add" })} back={() => setTab("dashboard")} onDeleteManual={deleteManualTx} onDeleteInvestment={deleteInvestment} openDetail={(d) => setDetail(d)} />
         </div>
       )}
       {tab === "reports" && (
