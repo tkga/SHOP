@@ -911,6 +911,7 @@ export default function App() {
           onDelete={() => { deleteAccount(detail.item.id); setDetail(null); }}
           onAddInvestment={() => { setModal({ type: "tx", mode: "add", presetAccount: detail.item.id }); setDetail(null); }}
           onDeleteInvestment={deleteInvestment}
+          onDeleteManual={deleteManualTx}
           onAddStock={() => { setModal({ type: "stock", mode: "add", accountId: detail.item.id }); setDetail(null); }}
           onEditStock={(s) => { setModal({ type: "stock", mode: "edit", item: s, accountId: detail.item.id }); setDetail(null); }}
         />
